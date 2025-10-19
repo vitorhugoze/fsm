@@ -142,13 +142,3 @@ func (state State[T]) WithFallback(fallback T) State[T] {
 	state.fallback = fallback
 	return state
 }
-
-type MyStates int
-
-const (
-	Start MyStates = iota
-	Plan1
-	Plan2
-	Plan3
-	Confirm
-)
