@@ -9,9 +9,9 @@ type Fsm[T ~int] struct {
 	states       []State[T]
 }
 
-func NewFsm[T ~int](initialState T) Fsm[T] {
+func NewFsm[T ~int]() Fsm[T] {
 	return Fsm[T]{
-		currentState: initialState,
+		currentState: math.MinInt,
 	}
 }
 
@@ -41,20 +41,22 @@ func (fsm *Fsm[T]) Event(event string) {
 			return
 		}
 
-		fsm.changeState(next)
+		fsm.SetState(next)
 		return
 	}
 }
 
-func (fsm *Fsm[T]) changeState(toState T) {
-	err := fsm.triggerCallback(EXIT, fsm.currentState)
-	if err != nil {
-		fsm.fallback()
-		return
+func (fsm *Fsm[T]) SetState(toState T) {
+	if fsm.currentState != math.MinInt {
+		err := fsm.triggerCallback(EXIT, fsm.currentState)
+		if err != nil {
+			fsm.fallback()
+			return
+		}
 	}
 
 	fsm.currentState = toState
-	err = fsm.triggerCallback(ENTER, toState)
+	err := fsm.triggerCallback(ENTER, toState)
 	if err != nil {
 		fsm.fallback()
 		return
